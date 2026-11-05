@@ -10,6 +10,55 @@
 #include <dt-bindings/zmk/pointing.h>
 #include <dt-bindings/zmk/rgb.h>
 
+// Layer indices. PC layers 0-8 keep their original numbers; Mac layers follow.
+#define ALFA      0
+#define NAV       1
+#define MOUSE     2
+#define MEDIA     3
+#define NUM       4
+#define SYM       5
+#define FUN       6
+#define GAE       7
+#define GAY       8
+#define MAC_ALFA  9
+#define MAC_NAV   10
+#define MAC_MOUSE 11
+#define MAC_MEDIA 12
+#define MAC_NUM   13
+#define MAC_SYM   14
+#define MAC_FUN   15
+
+// Bluetooth profile slots
+#define PC_PROFILE  0
+#define MAC_PROFILE 1
+
+// Mac symbols, for macOS "Portuguese" input source (keycodes are US key positions)
+#define PT_LBKT  LA(N8)        // [
+#define PT_RBKT  LA(N9)        // ]
+#define PT_LBRC  LA(LS(N8))    // {
+#define PT_RBRC  LA(LS(N9))    // }
+#define PT_SQT   MINUS         // '
+#define PT_DQT   LS(N2)        // "
+#define PT_EQL   LS(N0)        // =
+#define PT_PLUS  EQUAL         // +
+#define PT_ASTR  LS(EQUAL)     // *
+#define PT_AMPS  LS(N6)        // &
+#define PT_LPAR  LS(N8)        // (
+#define PT_RPAR  LS(N9)        // )
+#define PT_GRV   GRAVE         // `
+#define PT_TILD  LS(GRAVE)     // ~
+#define PT_BSLH  BSLH          // backslash
+#define PT_PIPE  LS(BSLH)      // |
+#define PT_MINUS FSLH          // -
+#define PT_UNDER LS(FSLH)      // _
+#define PT_AT    LA(N2)        // @
+#define PT_SEMI  LS(COMMA)     // ;
+#define PT_COLON LS(DOT)       // :
+#define PT_SLASH LS(N7)        // /
+#define PT_QMARK LS(MINUS)     // ?
+#define PT_LT    NUBS          // <
+#define PT_GT    LS(NUBS)      // >
+
 &mmv_input_listener { input-processors = <&zip_xy_scaler 2 1>; };
 
 &msc_input_listener { input-processors = <&zip_scroll_scaler 3 1>; };  // was 2 1
@@ -29,6 +78,27 @@
 &soft_off { hold-time-ms = <2000>; };
 
 / {
+    macros {
+        // Switch to the PC profile and PC layers
+        pc_mode: pc_mode {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL PC_PROFILE>, <&to ALFA>;
+        };
+        // Switch to the Mac profile and Mac layers
+        mac_mode: mac_mode {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&bt BT_SEL MAC_PROFILE>, <&to MAC_ALFA>;
+        };
+        // ^ is a dead key on Mac Portuguese: press it, then space
+        mac_caret: mac_caret {
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&kp LS(SQT)>, <&kp SPACE>;
+        };
+    };
+
     behaviors {
         hm: home_row_mods {
             compatible = "zmk,behavior-hold-tap";
@@ -50,13 +120,48 @@
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <200>;
-            bindings = <&none>, <&to 7>;
+            bindings = <&none>, <&to GAE>;
         };
         td_alfa: td_alfa_layer {
             compatible = "zmk,behavior-tap-dance";
             #binding-cells = <0>;
             tapping-term-ms = <200>;
-            bindings = <&none>, <&to 0>;
+            bindings = <&none>, <&to ALFA>;
+        };
+
+        // Mac base-layer punctuation: makes Shift give the same symbols as on the PC
+        m_semi: mac_semi {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp PT_SEMI>, <&kp PT_COLON>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        m_comma: mac_comma {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp COMMA>, <&kp PT_LT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        m_dot: mac_dot {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp DOT>, <&kp PT_GT>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        m_slash: mac_slash {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&kp PT_SLASH>, <&kp PT_QMARK>;
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+        // Home-row mod whose tap is the Mac semicolon (use as: &hm_semi LCTRL 0)
+        hm_semi: home_row_mods_mac_semi {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <175>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&m_semi>;
         };
     };
 
@@ -86,13 +191,15 @@
     keymap {
         compatible = "zmk,keymap";
 
+        // ===================================================== PC / Linux
+
         alfa {
             display-name = "alfa";
             bindings = <
 &none   &kp Q        &kp W        &kp E         &kp R            &kp T                    &none           &kp Y         &kp U         &kp I         &kp O        &kp P          &none
 &none   &hm LGUI A   &hm LALT S   &hm LSHIFT D  &hm LCTRL F      &kp G            &none   &none  &none    &kp H         &hm LCTRL J   &hm LSHIFT K  &hm LALT L   &hm LGUI SEMI  &none
 &none   &kp Z        &kp X        &kp C         &kp V            &kp B      &none         &none           &kp N         &kp M         &kp COMMA     &kp DOT      &kp FSLH       &none
-                                  &lt 3 ESC     &lt 1 SPACE      &lt 2 TAB                                &lt 5 RET     &lt 4 BSPC    &lt 6 DEL
+                                  &lt MEDIA ESC &lt NAV SPACE    &lt MOUSE TAB                            &lt SYM RET   &lt NUM BSPC  &lt FUN DEL
             >;
         };
 
@@ -100,7 +207,7 @@
         nav {
             display-name = "nav";
             bindings = <
-&none   &none      &none      &none        &none         &td_gae                 &none          &kp LS(LG(Z))   &kp LG(V)   &kp LG(C)   &kp LG(X)   &kp LG(Z)   &none
+&none   &none      &none      &none        &none         &td_gae                 &none          &kp LS(LC(Z))   &kp LC(V)   &kp LC(C)   &kp LC(X)   &kp LC(Z)   &none
 &none   &kp LGUI   &kp LALT   &kp LSHFT    &kp LCTRL     &none           &none   &none  &none   &kp CAPS        &kp LEFT    &kp DOWN    &kp UP      &kp RIGHT   &none
 &none   &none      &none      &none        &none         &none     &none         &none          &kp INS         &kp HOME    &kp PG_DN   &kp PG_UP   &kp END     &none
                               &trans       &trans        &trans                                 &trans          &trans      &trans
@@ -111,7 +218,7 @@
         mouse {
             display-name = "mouse";
             bindings = <
-&none   &none      &none      &none       &none               &none                          &none          &kp LS(LG(Z))    &kp LG(V)        &kp LG(C)        &kp LG(X)      &kp LG(Z)         &none
+&none   &none      &none      &none       &none               &none                          &none          &kp LS(LC(Z))    &kp LC(V)        &kp LC(C)        &kp LC(X)      &kp LC(Z)         &none
 &none   &kp LGUI   &kp LALT   &kp LSHFT   &kp LCTRL           &none                  &none   &none  &none   &kp LS(LG(N5))   &mmv MOVE_LEFT   &mmv MOVE_DOWN   &mmv MOVE_UP   &mmv MOVE_RIGHT   &none
 &none   &none      &none      &none       &kp LS(LC(COMMA))   &kp LS(LC(DOT))   &none        &none          &mkp MB4         &msc SCRL_LEFT   &msc SCRL_DOWN   &msc SCRL_UP   &msc SCRL_RIGHT   &none
                               &trans      &trans              &trans                                        &mkp MB2         &mkp MB1         &mkp MB3
@@ -124,7 +231,7 @@
             bindings = <
 &none   &none      &none      &none       &none       &none                 &none          &bt BT_CLR     &none          &none          &none          &none        &none
 &none   &kp LGUI   &kp LALT   &kp LSHFT   &kp LCTRL   &none         &none   &none  &none   &none          &kp C_PREV     &kp C_VOL_DN   &kp C_VOL_UP   &kp C_NEXT   &none
-&none   &none      &none      &none       &none       &none   &none         &none          &bt BT_SEL 0   &bt BT_SEL 1   &bt BT_SEL 2   &bt BT_SEL 3   &none        &none
+&none   &none      &none      &none       &none       &none   &none         &none          &pc_mode       &mac_mode      &bt BT_SEL 2   &bt BT_SEL 3   &none        &none
                               &trans      &trans      &trans                               &kp C_STOP     &kp C_PP       &kp C_MUTE
             >;
         };
@@ -169,7 +276,7 @@
 &none   &kp TAB      &kp Q   &kp W     &kp E       &kp R                   &none          &kp T     &kp Y      &kp U       &kp I     &kp O      &none
 &none   &kp LSHIFT   &kp A   &kp S     &kp D       &kp F           &none   &none  &none   &kp H     &kp J      &kp K       &kp L     &kp P      &none
 &none   &kp LCTRL    &kp Z   &kp X     &kp C       &kp V    &none          &none          &kp B     &kp N      &kp COMMA   &kp DOT   &kp FSLH   &none
-                             &kp ESC   &kp SPACE   &sl 8                                  &kp RET   &kp BSPC   &kp DEL
+                             &kp ESC   &kp SPACE   &sl GAY                                &kp RET   &kp BSPC   &kp DEL
             >;
         };
 
@@ -181,6 +288,79 @@
 &none   &trans   &trans   &trans   &kp T    &kp G             &none   &none  &none   &trans   &trans   &trans   &trans   &trans   &none
 &none   &trans   &trans   &trans   &trans   &trans     &none          &none          &trans   &trans   &trans   &trans   &trans   &none
                           &trans   &trans   &none                                    &trans   &trans   &trans
+            >;
+        };
+
+        // ===================================================== macOS (Portuguese input)
+        // Cmd on the index finger, Ctrl on the pinky.
+
+        mac_alfa {
+            display-name = "mac";
+            bindings = <
+&none   &kp Q         &kp W        &kp E           &kp R              &kp T                       &none             &kp Y            &kp U         &kp I          &kp O        &kp P              &none
+&none   &hm LCTRL A   &hm LALT S   &hm LSHIFT D    &hm LGUI F         &kp G             &none     &none  &none      &kp H            &hm LGUI J    &hm LSHIFT K   &hm LALT L   &hm_semi LCTRL 0   &none
+&none   &kp Z         &kp X        &kp C           &kp V              &kp B      &none            &none             &kp N            &kp M         &m_comma       &m_dot       &m_slash           &none
+                                   &lt MAC_MEDIA ESC &lt MAC_NAV SPACE &lt MAC_MOUSE TAB                            &lt MAC_SYM RET &lt MAC_NUM BSPC &lt MAC_FUN DEL
+            >;
+        };
+
+        mac_nav {
+            display-name = "mac nav";
+            bindings = <
+&none   &none       &none      &none        &none        &td_gae                 &none          &kp LS(LG(Z))   &kp LG(V)      &kp LG(C)   &kp LG(X)   &kp LG(Z)       &none
+&none   &kp LCTRL   &kp LALT   &kp LSHFT    &kp LGUI     &none           &none   &none  &none   &kp CAPS        &kp LEFT       &kp DOWN    &kp UP      &kp RIGHT       &none
+&none   &none       &none      &none        &none        &none     &none         &none          &kp INS         &kp LG(LEFT)   &kp PG_DN   &kp PG_UP   &kp LG(RIGHT)   &none
+                               &trans       &trans       &trans                                 &trans          &trans         &trans
+            >;
+        };
+
+        mac_mouse {
+            display-name = "mac mouse";
+            bindings = <
+&none   &none       &none      &none       &none               &none                          &none          &kp LS(LG(Z))    &kp LG(V)        &kp LG(C)        &kp LG(X)      &kp LG(Z)         &none
+&none   &kp LCTRL   &kp LALT   &kp LSHFT   &kp LGUI            &none                  &none   &none  &none   &kp LS(LG(N5))   &mmv MOVE_LEFT   &mmv MOVE_DOWN   &mmv MOVE_UP   &mmv MOVE_RIGHT   &none
+&none   &none       &none      &none       &kp LS(LC(COMMA))   &kp LS(LC(DOT))   &none        &none          &mkp MB4         &msc SCRL_LEFT   &msc SCRL_DOWN   &msc SCRL_UP   &msc SCRL_RIGHT   &none
+                               &trans      &trans              &trans                                        &mkp MB2         &mkp MB1         &mkp MB3
+            >;
+        };
+
+        mac_media {
+            display-name = "mac media";
+            bindings = <
+&none   &none       &none      &none       &none      &none                 &none          &bt BT_CLR     &none          &none          &none          &none        &none
+&none   &kp LCTRL   &kp LALT   &kp LSHFT   &kp LGUI   &none         &none   &none  &none   &none          &kp C_PREV     &kp C_VOL_DN   &kp C_VOL_UP   &kp C_NEXT   &none
+&none   &none       &none      &none       &none      &none   &none         &none          &pc_mode       &mac_mode      &bt BT_SEL 2   &bt BT_SEL 3   &none        &none
+                               &trans      &trans     &trans                               &kp C_STOP     &kp C_PP       &kp C_MUTE
+            >;
+        };
+
+        mac_num {
+            display-name = "mac num";
+            bindings = <
+&none   &kp PT_LBKT   &kp N7   &kp N8    &kp N9   &kp PT_RBKT                  &none          &none   &none      &none        &none      &none       &none
+&none   &kp PT_SQT    &kp N4   &kp N5    &kp N6   &kp PT_EQL           &none   &none  &none   &none   &kp LGUI   &kp LSHIFT   &kp LALT   &kp LCTRL   &none
+&none   &kp PT_GRV    &kp N1   &kp N2    &kp N3   &kp PT_BSLH    &none         &none          &none   &none      &none        &none      &none       &none
+                               &kp DOT   &kp N0   &kp PT_MINUS                                &trans  &trans     &trans
+            >;
+        };
+
+        mac_sym {
+            display-name = "mac sym";
+            bindings = <
+&none   &kp PT_LBRC   &kp PT_AMPS   &kp PT_ASTR   &kp PT_LPAR   &kp PT_RBRC                  &none          &none    &none      &none        &none      &none       &none
+&none   &kp PT_DQT    &kp LS(N4)    &kp LS(N5)    &mac_caret    &kp PT_PLUS          &none   &none  &none   &none    &kp LGUI   &kp LSHIFT   &kp LALT   &kp LCTRL   &none
+&none   &kp PT_TILD   &kp LS(N1)    &kp PT_AT     &kp LS(N3)    &kp PT_PIPE    &none         &none          &none    &none      &none        &none      &none       &none
+                                    &kp PT_LPAR   &kp PT_RPAR   &kp PT_UNDER                                &trans   &trans     &trans
+            >;
+        };
+
+        mac_fun {
+            display-name = "mac fun";
+            bindings = <
+&none   &kp F12   &kp F7   &kp F8      &kp F9   &kp LS(LG(N4))                  &none          &none    &none      &none        &none      &none       &none
+&none   &kp F11   &kp F4   &kp F5      &kp F6   &kp SLCK                &none   &none  &none   &none    &kp LGUI   &kp LSHIFT   &kp LALT   &kp LCTRL   &none
+&none   &kp F10   &kp F1   &kp F2      &kp F3   &kp PAUSE_BREAK   &none         &none          &none    &none      &none        &none      &none       &none
+                           &kp K_APP   &trans   &trans                                         &trans   &trans     &trans
             >;
         };
     };
