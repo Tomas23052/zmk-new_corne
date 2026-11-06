@@ -196,6 +196,39 @@
             bindings = <&soft_off>;
             key-positions = <1 15 29>;
         };
+
+        // Mac Portuguese accents: press the two stacked keys together,
+        // then the letter (e.g. U+J then a = á). Mac base layer only.
+        mac_acute {
+            bindings = <&kp RBKT>;        // ´
+            key-positions = <8 23>;       // U + J
+            layers = <MAC_ALFA>;
+            timeout-ms = <40>;
+        };
+        mac_tilde_dk {
+            bindings = <&kp SQT>;         // ~
+            key-positions = <9 24>;       // I + K
+            layers = <MAC_ALFA>;
+            timeout-ms = <40>;
+        };
+        mac_circ_dk {
+            bindings = <&kp LS(SQT)>;     // ^
+            key-positions = <10 25>;      // O + L
+            layers = <MAC_ALFA>;
+            timeout-ms = <40>;
+        };
+        mac_grave_dk {
+            bindings = <&kp LS(RBKT)>;    // `
+            key-positions = <11 26>;      // P + ;
+            layers = <MAC_ALFA>;
+            timeout-ms = <40>;
+        };
+        mac_cedilla {
+            bindings = <&kp SEMI>;        // ç
+            key-positions = <16 31>;      // D + C
+            layers = <MAC_ALFA>;
+            timeout-ms = <40>;
+        };
     };
 
     keymap {
@@ -303,14 +336,14 @@
 
         // ===================================================== macOS (Portuguese input)
         // Cmd on the index finger, Ctrl on the pinky.
-        // Outer columns hold the Portuguese dead keys: ` ^ on the left, ´ ~ ç on the right.
+        // Portuguese accents are vertical combos (see combos above).
 
         mac_alfa {
             display-name = "mac";
             bindings = <
-&kp LS(RBKT) &kp Q    &kp W        &kp E           &kp R              &kp T                       &none             &kp Y            &kp U         &kp I          &kp O        &kp P              &kp RBKT
-&kp LS(SQT) &hm LCTRL A   &hm LALT S   &hm LSHIFT D    &hm LGUI F         &kp G             &none     &none  &none      &kp H            &hm LGUI J    &hm LSHIFT K   &hm LALT L   &hm_semi LCTRL 0   &kp SQT
-&none   &kp Z         &kp X        &kp C           &kp V              &kp B      &none            &none             &kp N            &kp M         &m_comma       &m_dot       &m_slash           &kp SEMI
+&none   &kp Q         &kp W        &kp E           &kp R              &kp T                       &none             &kp Y            &kp U         &kp I          &kp O        &kp P              &none
+&none   &hm LCTRL A   &hm LALT S   &hm LSHIFT D    &hm LGUI F         &kp G             &none     &none  &none      &kp H            &hm LGUI J    &hm LSHIFT K   &hm LALT L   &hm_semi LCTRL 0   &none
+&none   &kp Z         &kp X        &kp C           &kp V              &kp B      &none            &none             &kp N            &kp M         &m_comma       &m_dot       &m_slash           &none
                                    &lt MAC_MEDIA ESC &lt MAC_NAV SPACE &lt MAC_MOUSE TAB                            &lt MAC_SYM RET &lt MAC_NUM BSPC &lt MAC_FUN DEL
             >;
         };
