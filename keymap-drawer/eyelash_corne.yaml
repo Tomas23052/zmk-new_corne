@@ -442,7 +442,7 @@ layers:
   - {t: '$$mdi:transfer$$', type: trans}
   - {t: '$$mdi:transfer$$', type: trans}
   mac:
-  - {t: 'Sft+]', s: 'Sft+}'}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - Q
   - W
   - E
@@ -454,8 +454,8 @@ layers:
   - I
   - O
   - P
-  - {t: ']', s: '}'}
-  - {t: Sft+', s: Sft+"}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: A, h: '$$mdi:apple-keyboard-control$$'}
   - {t: S, h: '$$mdi:apple-keyboard-option$$'}
   - {t: D, h: '$$mdi:apple-keyboard-shift$$'}
@@ -469,7 +469,7 @@ layers:
   - {t: K, h: '$$mdi:apple-keyboard-shift$$'}
   - {t: L, h: '$$mdi:apple-keyboard-option$$'}
   - {t: 'Sft+,', h: '$$mdi:apple-keyboard-control$$', s: Sft+.}
-  - {t: '''', s: '"'}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:minus-circle-outline$$', type: none}
   - Z
   - X
@@ -483,7 +483,7 @@ layers:
   - {t: ',', s: NUBS}
   - {t: ., s: Sft+NUBS}
   - {t: Sft+7, s: Sft+-}
-  - {t: ;, s: ':'}
+  - {t: '$$mdi:minus-circle-outline$$', type: none}
   - {t: '$$mdi:keyboard-esc$$', h: mac media}
   - {t: '$$mdi:keyboard-space$$', h: mac nav}
   - {t: '$$mdi:keyboard-tab$$', h: mac mouse}
@@ -787,3 +787,18 @@ layers:
 combos:
 - p: [1, 15, 29]
   k: '&soft_off'
+- p: [8, 23]
+  k: {t: ']', s: '}'}
+  l: [mac]
+- p: [9, 24]
+  k: {t: '''', s: '"'}
+  l: [mac]
+- p: [10, 25]
+  k: Sft+'
+  l: [mac]
+- p: [11, 26]
+  k: Sft+]
+  l: [mac]
+- p: [16, 31]
+  k: {t: ;, s: ':'}
+  l: [mac]
