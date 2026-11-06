@@ -196,39 +196,6 @@
             bindings = <&soft_off>;
             key-positions = <1 15 29>;
         };
-
-        // Mac Portuguese accents: press the two stacked keys together,
-        // then the letter (e.g. U+J then a = á). Mac base layer only.
-        mac_acute {
-            bindings = <&kp RBKT>;        // ´
-            key-positions = <8 23>;       // U + J
-            layers = <MAC_ALFA>;
-            timeout-ms = <40>;
-        };
-        mac_tilde_dk {
-            bindings = <&kp SQT>;         // ~
-            key-positions = <9 24>;       // I + K
-            layers = <MAC_ALFA>;
-            timeout-ms = <40>;
-        };
-        mac_circ_dk {
-            bindings = <&kp LS(SQT)>;     // ^
-            key-positions = <10 25>;      // O + L
-            layers = <MAC_ALFA>;
-            timeout-ms = <40>;
-        };
-        mac_grave_dk {
-            bindings = <&kp LS(RBKT)>;    // `
-            key-positions = <11 26>;      // P + ;
-            layers = <MAC_ALFA>;
-            timeout-ms = <40>;
-        };
-        mac_cedilla {
-            bindings = <&kp SEMI>;        // ç
-            key-positions = <16 31>;      // D + C
-            layers = <MAC_ALFA>;
-            timeout-ms = <40>;
-        };
     };
 
     keymap {
@@ -336,7 +303,7 @@
 
         // ===================================================== macOS (Portuguese input)
         // Cmd on the index finger, Ctrl on the pinky.
-        // Portuguese accents are vertical combos (see combos above).
+        // Portuguese accents: hold Enter (sym layer), right top row = ç ´ ~ ^ `.
 
         mac_alfa {
             display-name = "mac";
